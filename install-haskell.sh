@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
-ghcversion=${ghcversion}
-cabalversion=1.20.0.3
+ghcversion="7.8.3"
+cabalversion="1.20.0.3"
 archi=$(uname -m)
 if [[ $(uname -s) = "Darwin" ]]; then
     os="apple-darwin"
@@ -11,7 +11,7 @@ else
     cabalos="unknown-linux"
 fi
 
-tmpdir=/tmp/install-haskell-osx
+tmpdir=/tmp/install-haskell
 mkdir -p $tmpdir
 
 cd $tmpdir
@@ -36,15 +36,18 @@ echo "Installing cabal..."
 tar xzf cabal-$cabalversion-${archi}-${cabalos}s.tar.gz
 mv ./dist/build/cabal/cabal /usr/local/bin
 
-if [[ $1 = "yolo" ]]; then
-    echo "Using Stackage INCLUSIVE snapshot..."
-    stackageurl="remote-repo: stackage:http://www.stackage.org/stackage/3cb59cb0cfe26e0513c30a727d889e7b0d427efd"
+echo "Init cabal..."
+cabal info >/dev/null 2>&1
+
+if [[ $1 = "kernel" ]]; then
+    echo "Using Stackage Exclusively..."
+    stackageurl="stackage:http://www.stackage.org/stackage/77fb1efe248e3160d1e7dee5a009a0c5713651ae"
 else
     echo "Using Stackage..."
-    stackageurl="remote-repo: stackage:http://www.stackage.org/stackage/77fb1efe248e3160d1e7dee5a009a0c5713651ae"
+    stackageurl="stackage:http://www.stackage.org/stackage/3cb59cb0cfe26e0513c30a727d889e7b0d427efd"
 fi
 # use exclusive snapshot by default.
-perl -pi.bak -e 's#^remote-repo: .*$#remote-repo: '$stackageurl $HOME/.cabal/config
+perl -pi.bak -e 's#^remote-repo: .*$#remote-repo: '$stackageurl'#' $HOME/.cabal/config
 cabal update
 echo "Install useful binaries"
 cabal install alex happy
