@@ -50,7 +50,7 @@ fi
 perl -pi.bak -e 's#^remote-repo: .*$#remote-repo: '$stackageurl'#' $HOME/.cabal/config
 cabal update
 echo "Install useful binaries"
-cabal install alex happy
+cabal install -j alex happy
 
 echo "Update your PATH in .profile for cabal binaries"
 echo 'export PATH=$HOME/.cabal/bin:$PATH' >> $HOME/.profile
