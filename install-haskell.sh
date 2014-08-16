@@ -1,0 +1,62 @@
+#!/usr/bin/env zsh
+
+ghcversion=${ghcversion}
+cabalversion=1.20.0.3
+archi=$(uname -m)
+if [[ $(uname -s) = "Darwin" ]]; then
+    os="apple-darwin"
+    cabalos="apple-darwin-maverick"
+else
+    os="unknown-linux-deb7"
+    cabalos="unknown-linux"
+fi
+
+tmpdir=/tmp/install-haskell-osx
+mkdir -p $tmpdir
+
+cd $tmpdir
+if [[ ! -e ghc-${ghcversion}-${archi}-${os}.tar.xz ]]; then
+    echo "Downloading GHC..."
+    curl -O http://www.haskell.org/ghc/dist/${ghcversion}/ghc-${ghcversion}-${archi}-${os}.tar.xz
+else
+    echo "Using already downloaded GHC ($tmpdir)..."
+fi
+echo "Installing GHC..."
+cd ghc-${ghcversion}
+./configure && make install
+
+cd $tmpdir
+echo "Downloading cabal..."
+if [[ ! -e cabal-$cabalversion-${archi}-${cabalos}s.tar.gz ]]; then
+    curl -O http://www.haskell.org/cabal/release/cabal-install-$cabalversion/cabal-$cabalversion-${archi}-${cabalos}s.tar.gz
+else
+    echo "Using already downloaded cabal ($tmpdir)..."
+fi
+echo "Installing cabal..."
+tar xzf cabal-$cabalversion-${archi}-${cabalos}s.tar.gz
+mv ./dist/build/cabal/cabal /usr/local/bin
+
+if [[ $1 = "yolo" ]]; then
+    echo "Using Stackage INCLUSIVE snapshot..."
+    stackageurl="remote-repo: stackage:http://www.stackage.org/stackage/3cb59cb0cfe26e0513c30a727d889e7b0d427efd"
+else
+    echo "Using Stackage..."
+    stackageurl="remote-repo: stackage:http://www.stackage.org/stackage/77fb1efe248e3160d1e7dee5a009a0c5713651ae"
+fi
+# use exclusive snapshot by default.
+perl -pi.bak -e 's#^remote-repo: .*$#remote-repo: '$stackageurl $HOME/.cabal/config
+cabal update
+echo "Install useful binaries"
+cabal install alex happy
+
+echo "Update your PATH in .profile for cabal binaries"
+echo 'export PATH=$HOME/.cabal/bin:$PATH' >> $HOME/.profile
+
+echo
+echo "Congratulations"
+echo "==============="
+echo
+echo "You should start using Haskell like a pro now"
+echo "You shouldn't use cabal sandbox except if you know what you are doing."
+echo "So if you follow a tutorial that use cabal sandbox, don't use it."
+echo "Unless you don't mind killing some white bear and waiting a lot."
