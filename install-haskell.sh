@@ -1,23 +1,21 @@
 #!/usr/bin/env zsh
 
 ghcversion="7.8.3"
-cabalversion="1.20.0.3"
+cabalversion="1.20.0.1"
 archi=$(uname -m)
 if [[ $(uname -s) = "Darwin" ]]; then
     os="apple-darwin"
     cabalos="apple-darwin-maverick"
-    cabalarchi=$archi
 else
     os="unknown-linux-deb7"
     cabalos="unknown-linux"
-    cabalarchi=i386
 fi
 
 tmpdir=/tmp/install-haskell
 mkdir -p $tmpdir
 
 cd $tmpdir
-ghctar=ghc-${ghcversion}-${archi}-${os}.tar.xz 
+ghctar=ghc-${ghcversion}-${archi}-${os}.tar.xz
 if [[ ! -e $ghctar ]]; then
     echo "Downloading GHC..."
     curl -O http://www.haskell.org/ghc/dist/${ghcversion}/$ghctar
@@ -31,7 +29,7 @@ cd ghc-${ghcversion}
 
 cd $tmpdir
 echo "Downloading cabal..."
-cabaltar=cabal-$cabalversion-${cabalarchi}-${cabalos}.tar.gz 
+cabaltar=cabal-$cabalversion-${archi}-${cabalos}.tar.gz
 if [[ ! -e $cabaltar ]]; then
     curl -O http://www.haskell.org/cabal/release/cabal-install-$cabalversion/$cabaltar
 else
