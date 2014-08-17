@@ -39,7 +39,11 @@ else
 fi
 tar xzf $cabaltar
 echo "Installing cabal..."
-mv ./dist/build/cabal/cabal /usr/local/bin
+if [[ -e ./cabal ]]; then
+    mv cabal /usr/local/bin
+else
+    mv ./dist/build/cabal/cabal /usr/local/bin
+fi
 
 echo "Init cabal..."
 cabal info >/dev/null 2>&1
