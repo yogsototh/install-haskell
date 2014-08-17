@@ -64,7 +64,7 @@ echo "Install useful binaries"
 sudo -u $normaluser cabal install -j alex happy
 
 echo "Update your PATH in .profile for cabal binaries"
-echo 'export PATH=$HOME/.cabal/bin:$PATH' >> $HOME/.profile
+sudo -u $normaluser echo 'export PATH=$HOME/.cabal/bin:$PATH' >> $HOME/.profile
 
 echo
 echo "Congratulations"
