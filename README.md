@@ -2,7 +2,8 @@ install-haskell
 ===============
 
 A script to install Haskell and minimize cabal hell.
-It might ask your password (you must be sudoer).
+
+If you are on Linux install `libgmp-dev` and `zsh`.
 
 ```
 curl -O https://raw.githubusercontent.com/yogsototh/install-haskell/master/install-haskell.sh
