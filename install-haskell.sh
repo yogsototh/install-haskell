@@ -1,12 +1,13 @@
 #!/usr/bin/env zsh
 
 ghcversion="7.8.3"
-cabalversion="1.20.0.1"
+cabalversion="1.20.0.3"
 archi=$(uname -m)
 if [[ $(uname -s) = "Darwin" ]]; then
     os="apple-darwin"
     cabalos="apple-darwin-maverick"
 else
+    cabalversion="1.20.0.1"
     os="unknown-linux-deb7"
     cabalos="unknown-linux"
 fi
