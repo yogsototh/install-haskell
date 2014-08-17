@@ -26,7 +26,7 @@ fi
 echo "Installing GHC..."
 tar xJf $ghctar
 cd ghc-${ghcversion}
-./configure && make install
+./configure && sudo make install
 
 cd $tmpdir
 echo "Downloading cabal..."
@@ -40,9 +40,9 @@ fi
 tar xzf $cabaltar
 echo "Installing cabal..."
 if [[ -e ./cabal ]]; then
-    mv cabal /usr/local/bin
+    sudo mv cabal /usr/local/bin
 else
-    mv ./dist/build/cabal/cabal /usr/local/bin
+    sudo mv ./dist/build/cabal/cabal /usr/local/bin
 fi
 
 echo "Init cabal..."
