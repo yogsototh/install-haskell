@@ -30,7 +30,8 @@ cd ghc-${ghcversion}
 
 cd $tmpdir
 echo "Downloading cabal..."
-cabaltar=cabal-$cabalversion-${archi}-${cabalos}.tar.gz
+cabaltar=cabal-${cabalversion}-${archi}-${cabalos}.tar.gz
+[[ $cabalos = "unknown-linux" ]] && cabaltar=cabal-${archi}-${cabalos}.tar.gz
 if [[ ! -e $cabaltar ]]; then
     curl -O http://www.haskell.org/cabal/release/cabal-install-$cabalversion/$cabaltar
 else
