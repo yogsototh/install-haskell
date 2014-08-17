@@ -22,6 +22,7 @@ else
     echo "Using already downloaded GHC ($tmpdir)..."
 fi
 echo "Installing GHC..."
+tar xJf ghc-${ghcversion}-${archi}-${os}.tar.xz
 cd ghc-${ghcversion}
 ./configure && make install
 
@@ -32,8 +33,8 @@ if [[ ! -e cabal-$cabalversion-${archi}-${cabalos}s.tar.gz ]]; then
 else
     echo "Using already downloaded cabal ($tmpdir)..."
 fi
-echo "Installing cabal..."
 tar xzf cabal-$cabalversion-${archi}-${cabalos}s.tar.gz
+echo "Installing cabal..."
 mv ./dist/build/cabal/cabal /usr/local/bin
 
 echo "Init cabal..."
