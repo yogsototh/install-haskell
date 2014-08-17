@@ -6,34 +6,38 @@ archi=$(uname -m)
 if [[ $(uname -s) = "Darwin" ]]; then
     os="apple-darwin"
     cabalos="apple-darwin-maverick"
+    cabalarchi=$archi
 else
     os="unknown-linux-deb7"
     cabalos="unknown-linux"
+    cabalarchi=i386
 fi
 
 tmpdir=/tmp/install-haskell
 mkdir -p $tmpdir
 
 cd $tmpdir
-if [[ ! -e ghc-${ghcversion}-${archi}-${os}.tar.xz ]]; then
+ghctar=ghc-${ghcversion}-${archi}-${os}.tar.xz 
+if [[ ! -e $ghctar ]]; then
     echo "Downloading GHC..."
-    curl -O http://www.haskell.org/ghc/dist/${ghcversion}/ghc-${ghcversion}-${archi}-${os}.tar.xz
+    curl -O http://www.haskell.org/ghc/dist/${ghcversion}/$ghctar
 else
     echo "Using already downloaded GHC ($tmpdir)..."
 fi
 echo "Installing GHC..."
-tar xJf ghc-${ghcversion}-${archi}-${os}.tar.xz
+tar xJf $ghctar
 cd ghc-${ghcversion}
 ./configure && make install
 
 cd $tmpdir
 echo "Downloading cabal..."
-if [[ ! -e cabal-$cabalversion-${archi}-${cabalos}s.tar.gz ]]; then
-    curl -O http://www.haskell.org/cabal/release/cabal-install-$cabalversion/cabal-$cabalversion-${archi}-${cabalos}s.tar.gz
+cabaltar=cabal-$cabalversion-${cabalarchi}-${cabalos}.tar.gz 
+if [[ ! -e $cabaltar ]]; then
+    curl -O http://www.haskell.org/cabal/release/cabal-install-$cabalversion/$cabaltar
 else
     echo "Using already downloaded cabal ($tmpdir)..."
 fi
-tar xzf cabal-$cabalversion-${archi}-${cabalos}s.tar.gz
+tar xzf $cabaltar
 echo "Installing cabal..."
 mv ./dist/build/cabal/cabal /usr/local/bin
 
