@@ -51,24 +51,20 @@ else
     mv ./dist/build/cabal/cabal /usr/local/bin
 fi
 
-initcabal(){
-    echo "Init cabal..."
-    cabal info >/dev/null 2>&1
+echo "Init cabal..."
+sudo -u $normaluser cabal info >/dev/null 2>&1
 
-    echo "Using Stackage..."
-    stackageurl="stackage:http://www.stackage.org/stackage/3cb59cb0cfe26e0513c30a727d889e7b0d427efd"
+echo "Using Stackage..."
+stackageurl="stackage:http://www.stackage.org/stackage/3cb59cb0cfe26e0513c30a727d889e7b0d427efd"
 
-    # use exclusive snapshot by default.
-    perl -pi.bak -e 's#^remote-repo: .*$#remote-repo: '$stackageurl'#' $HOME/.cabal/config
-    cabal update
-    echo "Install useful binaries"
-    cabal install -j alex happy
+# use exclusive snapshot by default.
+sudo -u $normaluser perl -pi.bak -e 's#^remote-repo: .*$#remote-repo: '$stackageurl'#' $HOME/.cabal/config
+sudo -u $normaluser cabal update
+echo "Install useful binaries"
+sudo -u $normaluser cabal install -j alex happy
 
-    echo "Update your PATH in .profile for cabal binaries"
-    echo 'export PATH=$HOME/.cabal/bin:$PATH' >> $HOME/.profile
-}
-
-sudo -u $normaluser initcabal
+echo "Update your PATH in .profile for cabal binaries"
+echo 'export PATH=$HOME/.cabal/bin:$PATH' >> $HOME/.profile
 
 echo
 echo "Congratulations"
