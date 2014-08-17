@@ -7,6 +7,6 @@ It might ask your password (you must be sudoer).
 ```
 curl -O https://raw.githubusercontent.com/yogsototh/install-haskell/master/install-haskell.sh
 chmod ugo+x install-haskell.sh
-./install-haskell.sh
+sudo ./install-haskell.sh $USER
 ```
 

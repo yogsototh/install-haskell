@@ -1,5 +1,10 @@
 #!/usr/bin/env zsh
 
+normaluser=$1
+(( $# < 1 ))  && {
+    print -- "usage: ${0:t} \$USER" >&2
+    exit 1
+}
 ghcversion="7.8.3"
 cabalversion="1.20.0.3"
 archi=$(uname -m)
@@ -10,6 +15,7 @@ else
     cabalversion="1.20.0.1"
     os="unknown-linux-deb7"
     cabalos="unknown-linux"
+    apt-get install libgmp-dev
 fi
 
 tmpdir=/tmp/install-haskell
@@ -26,7 +32,7 @@ fi
 echo "Installing GHC..."
 tar xJf $ghctar
 cd ghc-${ghcversion}
-./configure && sudo make install
+./configure && make install
 
 cd $tmpdir
 echo "Downloading cabal..."
@@ -40,29 +46,29 @@ fi
 tar xzf $cabaltar
 echo "Installing cabal..."
 if [[ -e ./cabal ]]; then
-    sudo mv cabal /usr/local/bin
+    mv cabal /usr/local/bin
 else
-    sudo mv ./dist/build/cabal/cabal /usr/local/bin
+    mv ./dist/build/cabal/cabal /usr/local/bin
 fi
 
-echo "Init cabal..."
-cabal info >/dev/null 2>&1
+initcabal(){
+    echo "Init cabal..."
+    cabal info >/dev/null 2>&1
 
-if [[ $1 = "kernel" ]]; then
-    echo "Using Stackage Exclusively..."
-    stackageurl="stackage:http://www.stackage.org/stackage/77fb1efe248e3160d1e7dee5a009a0c5713651ae"
-else
     echo "Using Stackage..."
     stackageurl="stackage:http://www.stackage.org/stackage/3cb59cb0cfe26e0513c30a727d889e7b0d427efd"
-fi
-# use exclusive snapshot by default.
-perl -pi.bak -e 's#^remote-repo: .*$#remote-repo: '$stackageurl'#' $HOME/.cabal/config
-cabal update
-echo "Install useful binaries"
-cabal install -j alex happy
 
-echo "Update your PATH in .profile for cabal binaries"
-echo 'export PATH=$HOME/.cabal/bin:$PATH' >> $HOME/.profile
+    # use exclusive snapshot by default.
+    perl -pi.bak -e 's#^remote-repo: .*$#remote-repo: '$stackageurl'#' $HOME/.cabal/config
+    cabal update
+    echo "Install useful binaries"
+    cabal install -j alex happy
+
+    echo "Update your PATH in .profile for cabal binaries"
+    echo 'export PATH=$HOME/.cabal/bin:$PATH' >> $HOME/.profile
+}
+
+sudo -u $normaluser initcabal
 
 echo
 echo "Congratulations"
