@@ -59,8 +59,8 @@ fi
 echo "Init cabal..."
 sudo -u $normaluser cabal info >/dev/null 2>&1
 
-echo "Using Stackage..."
-stackageurl="stackage:http://www.stackage.org/stackage/3cb59cb0cfe26e0513c30a727d889e7b0d427efd"
+echo "Using Stackage build for GHC 7.8, 2014-08-17 exclusive..."
+stackageurl="stackage:http://www.stackage.org/stackage/44dd460d063f344de0da3bfe984e1ac816f18469"
 
 # use exclusive snapshot by default.
 sudo -u $normaluser perl -pi.bak -e 's#^remote-repo: .*$#remote-repo: '$stackageurl'#' $HOME/.cabal/config
@@ -71,11 +71,21 @@ sudo -u $normaluser cabal install -j alex happy
 echo "Update your PATH in .profile for cabal binaries"
 sudo -u $normaluser echo 'export PATH=$HOME/.cabal/bin:$PATH' >> $HOME/.profile
 
+echo "[Stackage build] "
+echo $stackageurl
 echo
-echo "Congratulations"
-echo "==============="
+echo "If some package are missing, that means they are not considered stable."
+echo "Ask gently the package maintainer to add its package to stackage."
+echo
+print -P -- "You could also use an %Binclusive%b build."
+echo "Packages not in exclusive build aren't be garanteed to build thought."
+echo
+echo "================"
+echo "Congratulations\!"
+echo "================"
 echo
 echo "You should start using Haskell like a pro now"
 echo "You shouldn't use cabal sandbox except if you know what you are doing."
 echo "So if you follow a tutorial that use cabal sandbox, don't use it."
 echo "Unless you don't mind killing some white bear and waiting a lot."
+echo
