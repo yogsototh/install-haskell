@@ -5,6 +5,11 @@ normaluser=$1
     print -- "usage: ${0:t} \$USER" >&2
     exit 1
 }
+
+userhome=$(sudo -u $normaluser echo $HOME)
+[[ -e $userhome/.cabal ]] && sudo -u $normaluser mv $HOME/{,old}.cabal
+[[ -e $userhome/.ghc ]] && sudo -u $normaluser mv $HOME/{,old}.ghc
+
 ghcversion="7.8.3"
 cabalversion="1.20.0.3"
 archi=$(uname -m)
