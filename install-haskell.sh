@@ -6,9 +6,18 @@ normaluser=$1
     exit 1
 }
 
-userhome=$(sudo -u $normaluser echo $HOME)
-[[ -e $userhome/.cabal ]] && sudo -u $normaluser mv $HOME/{,old}.cabal
-[[ -e $userhome/.ghc ]] && sudo -u $normaluser mv $HOME/{,old}.ghc
+userhome="$(sudo -u $normaluser echo $HOME)"
+echo $userhome
+
+if [[ -e $userhome/.cabal ]]; then
+    print -- "Moving your ~/.cabal to ~/old.cabal"
+    sudo -u $normaluser mv $HOME/{,old}.cabal
+fi
+
+if [[ -e $userhome/.ghc ]]; then
+    print -- "Moving your ~/.ghc to ~/old.ghc"
+    sudo -u $normaluser mv $HOME/{,old}.ghc
+fi
 
 ghcversion="7.8.3"
 cabalversion="1.20.0.3"
