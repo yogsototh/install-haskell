@@ -29,7 +29,8 @@ else
     cabalversion="1.20.0.1"
     os="unknown-linux-deb7"
     cabalos="unknown-linux"
-    apt-get install libgmp-dev
+    # -------------------------
+    # apt-get install libgmp-dev
 fi
 
 tmpdir=/tmp/install-haskell
