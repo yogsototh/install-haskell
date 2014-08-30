@@ -24,7 +24,7 @@ cabalversion="1.20.0.3"
 archi=$(uname -m)
 if [[ $(uname -s) = "Darwin" ]]; then
     os="apple-darwin"
-    cabalos="apple-darwin-maverick"
+    cabalos="apple-darwin-mavericks"
 else
     cabalversion="1.20.0.1"
     os="unknown-linux-deb7"
