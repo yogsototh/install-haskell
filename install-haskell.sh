@@ -26,7 +26,9 @@ if [[ $(uname -s) = "Darwin" ]]; then
     os="apple-darwin"
     cabalos="apple-darwin-mavericks"
 else
-    [[ $archi = "i686" ]] && archi=i386
+    if [[ $archi = "i686" ]]; then
+        archi=i386
+    fi
     cabalversion="1.20.0.1"
     os="unknown-linux-deb7"
     cabalos="unknown-linux"
