@@ -3,7 +3,7 @@ install-haskell
 
 A script to install Haskell and minimize cabal hell.
 
-If you are on Linux install `libgmp-dev` and `zsh`.
+If you are on Linux install `libgmp-dev`, `bzip2` and `zsh`.
 
 ```
 curl -O https://raw.githubusercontent.com/yogsototh/install-haskell/master/install-haskell.sh
