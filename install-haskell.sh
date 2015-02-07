@@ -19,6 +19,7 @@ if [[ -e $userhome/.ghc ]]; then
     sudo -u $normaluser mv $HOME/{,old}.ghc
 fi
 
+# 7.8.4 don't have an official apple-darwin build
 ghcversion="7.8.3"
 cabalversion="1.20.0.3"
 archi=$(uname -m)
@@ -29,7 +30,7 @@ else
     if [[ $archi = "i686" ]]; then
         archi=i386
     fi
-    cabalversion="1.20.0.1"
+    cabalversion="1.22.0.0"
     os="unknown-linux-deb7"
     cabalos="unknown-linux"
     # -------------------------
@@ -43,7 +44,8 @@ cd $tmpdir
 ghctar=ghc-${ghcversion}-${archi}-${os}.tar.xz
 if [[ ! -e $ghctar ]]; then
     echo "Downloading GHC..."
-    curl -LO http://www.haskell.org/ghc/dist/${ghcversion}/$ghctar
+    echo "http://www.haskell.org/ghc/dist/${ghcversion}/$ghctar"
+    curl -LO "http://www.haskell.org/ghc/dist/${ghcversion}/$ghctar"
 else
     echo "Using already downloaded GHC ($tmpdir)..."
 fi
@@ -57,7 +59,8 @@ echo "Downloading cabal..."
 cabaltar=cabal-${cabalversion}-${archi}-${cabalos}.tar.gz
 [[ $cabalos = "unknown-linux" ]] && cabaltar=cabal-${archi}-${cabalos}.tar.gz
 if [[ ! -e $cabaltar ]]; then
-    curl -LO http://www.haskell.org/cabal/release/cabal-install-$cabalversion/$cabaltar
+    echo "http://www.haskell.org/cabal/release/cabal-install-$cabalversion/$cabaltar"
+    curl -LO "http://www.haskell.org/cabal/release/cabal-install-$cabalversion/$cabaltar"
 else
     echo "Using already downloaded cabal ($tmpdir)..."
 fi
@@ -72,11 +75,13 @@ fi
 echo "Init cabal..."
 sudo -u $normaluser cabal info >/dev/null 2>&1
 
-echo "Using Stackage build for GHC 7.8, 2014-08-17 exclusive..."
-stackageurl="stackage:http://www.stackage.org/stackage/44dd460d063f344de0da3bfe984e1ac816f18469"
+echo "Using Haskell LTS for GHC 7.8"
+stackageurl="stackage-lts-1.0:http://www.stackage.org/snapshot/lts-1.0"
 
 # use exclusive snapshot by default.
 sudo -u $normaluser perl -pi.bak -e 's#^remote-repo: .*$#remote-repo: '$stackageurl'#' $HOME/.cabal/config
+sudo -u $normaluser perl -pi -e 's#-- library-profiling: False#library-profiling: True#' $HOME/.cabal/config
+sudo -u $normaluser perl -pi -e 's#-- executable-profiling: False#executable-profiling: True#' $HOME/.cabal/config
 sudo -u $normaluser cabal update
 echo "Install useful binaries"
 sudo -u $normaluser cabal install -j alex happy
@@ -89,9 +94,6 @@ echo $stackageurl
 echo
 echo "If some package are missing, that means they are not considered stable."
 echo "Ask gently the package maintainer to add its package to stackage."
-echo
-print -P -- "You could also use an %Binclusive%b build."
-echo "Packages not in exclusive build aren't be garanteed to build thought."
 echo
 echo "================"
 echo "Congratulations\!"
