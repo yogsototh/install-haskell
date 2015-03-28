@@ -2,7 +2,7 @@
 
 normaluser=$1
 (( $# < 1 ))  && {
-    print -- "usage: ${0:t} \$USER" >&2
+    print -- "usage: sudo ${0:t} \$USER" >&2
     exit 1
 }
 
@@ -76,10 +76,9 @@ echo "Init cabal..."
 sudo -u $normaluser cabal info >/dev/null 2>&1
 
 echo "Using Haskell LTS for GHC 7.8"
-stackageurl="stackage-lts-1.0:http://www.stackage.org/snapshot/lts-1.0"
 
 # use exclusive snapshot by default.
-sudo -u $normaluser perl -pi.bak -e 's#^remote-repo: .*$#remote-repo: '$stackageurl'#' $HOME/.cabal/config
+sudo -u $normaluser curl 'https://www.stackage.org/lts/cabal.config?global=true' >> ~/.cabal/config
 sudo -u $normaluser perl -pi -e 's#-- library-profiling: False#library-profiling: True#' $HOME/.cabal/config
 sudo -u $normaluser perl -pi -e 's#-- executable-profiling: False#executable-profiling: True#' $HOME/.cabal/config
 sudo -u $normaluser cabal update
@@ -89,12 +88,6 @@ sudo -u $normaluser cabal install -j alex happy
 echo "Update your PATH in .profile for cabal binaries"
 sudo -u $normaluser echo 'export PATH=$HOME/.cabal/bin:$PATH' >> $HOME/.profile
 
-echo "[Stackage build] "
-echo $stackageurl
-echo
-echo "If some package are missing, that means they are not considered stable."
-echo "Ask gently the package maintainer to add its package to stackage."
-echo
 echo "================"
 echo "Congratulations\!"
 echo "================"
