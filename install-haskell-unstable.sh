@@ -74,7 +74,7 @@ echo "Init cabal..."
 sudo -u $normaluser cabal info >/dev/null 2>&1
 
 sudo -u $normaluser perl -pi -e 's#-- library-profiling: False#library-profiling: True#' $HOME/.cabal/config
-sudo -u $normaluser perl -pi -e 's#-- profiling: False#profiling: True#' $HOME/.cabal/config
+sudo -u $normaluser perl -pi -e 's#-- enable-profiling: False#enable-profiling: True#' $HOME/.cabal/config
 sudo -u $normaluser cabal update
 echo "Install useful binaries"
 sudo -u $normaluser cabal install -j alex happy
