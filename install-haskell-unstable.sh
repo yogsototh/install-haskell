@@ -73,10 +73,6 @@ fi
 echo "Init cabal..."
 sudo -u $normaluser cabal info >/dev/null 2>&1
 
-echo "Using Haskell LTS for GHC 7.8"
-
-# use exclusive snapshot by default.
-sudo -u $normaluser curl 'https://www.stackage.org/lts/cabal.config?global=true' >> ~/.cabal/config
 sudo -u $normaluser perl -pi -e 's#-- library-profiling: False#library-profiling: True#' $HOME/.cabal/config
 sudo -u $normaluser perl -pi -e 's#-- executable-profiling: False#executable-profiling: True#' $HOME/.cabal/config
 sudo -u $normaluser cabal update
