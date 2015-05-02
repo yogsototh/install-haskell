@@ -1,10 +1,12 @@
 #!/usr/bin/env zsh
 
-normaluser=$1
-(( $# < 1 ))  && {
-    print -- "usage: sudo ${0:t} \$USER" >&2
+normaluser=$SUDO_USER
+
+if [[ $normaluser = "" ]]; then
+    print -- "Please set the SUDO_USER variable with"
+    print -- "export SUDO_USER=\$USER;"
     exit 1
-}
+fi
 
 userhome="$(sudo -u $normaluser echo $HOME)"
 echo $userhome
@@ -27,6 +29,16 @@ if [[ $(uname -s) = "Darwin" ]]; then
     os="apple-darwin"
     cabalos="apple-darwin-mavericks"
 else
+    if [[ ! -e /etc/debian_version ]]; then
+        print -- "You don't appear to be on a Debian based Linux"
+        print -- "This script might install files not necessarily at the right place for your distribution"
+        print -- "Do you want to continue?"
+        read answer
+        case $answer in
+            y|Y|yes|YES) print -- "OK" ;;
+            *) print -- "Bye!"; exit 1;;
+        esac
+    fi
     if [[ $archi = "i686" ]]; then
         archi=i386
     fi
@@ -85,15 +97,19 @@ sudo -u $normaluser cabal update
 echo "Install useful binaries"
 sudo -u $normaluser cabal install -j alex happy
 
-echo "Update your PATH in .profile for cabal binaries"
-sudo -u $normaluser echo 'export PATH=$HOME/.cabal/bin:$PATH' >> $HOME/.profile
+if grep 'export PATH=$HOME/.cabal/bin:$PATH' $HOME/.profile >/dev/null; then
+    echo "PATH variable already set in your .profile"
+else
+    echo "Update your PATH in .profile for cabal binaries"
+    sudo -u $normaluser echo 'export PATH=$HOME/.cabal/bin:$PATH' >> $HOME/.profile
+fi
 
 echo "================"
-echo "Congratulations\!"
+echo "Congratulations!"
 echo "================"
 echo
 echo "You should start using Haskell like a pro now"
 echo "You shouldn't use cabal sandbox except if you know what you are doing."
 echo "So if you follow a tutorial that use cabal sandbox, don't use it."
-echo "Unless you don't mind killing some white bear and waiting a lot."
+echo "Unless you don't mind killing some white bears and waiting a lot."
 echo
