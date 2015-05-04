@@ -109,9 +109,9 @@ unpriviledged cabal info >/dev/null 2>&1
 echo "Using Haskell LTS for GHC 7.8"
 
 # use exclusive snapshot by default.
-unpriviledged curl 'https://www.stackage.org/lts/cabal.config?global=true' >> ~/.cabal/config
-unpriviledged perl -pi -e 's#-- library-profiling: False#library-profiling: True#' $HOME/.cabal/config
-unpriviledged perl -pi -e 's#-- executable-profiling: False#executable-profiling: True#' $HOME/.cabal/config
+unpriviledged "curl 'https://www.stackage.org/lts/cabal.config?global=true' >> ~/.cabal/config"
+unpriviledged "perl -pi -e 's#-- library-profiling: False#library-profiling: True#' $HOME/.cabal/config"
+unpriviledged "perl -pi -e 's#-- executable-profiling: False#executable-profiling: True#' $HOME/.cabal/config"
 unpriviledged cabal update
 echo "Install useful binaries"
 unpriviledged cabal install -j alex happy
