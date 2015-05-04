@@ -8,22 +8,41 @@ if [[ $normaluser = "" ]]; then
     exit 1
 fi
 
+# -- To use colors
+autoload colors
+colors
+for COLOR in RED GREEN YELLOW BLUE MAGENTA CYAN BLACK WHITE; do
+    eval $COLOR='$fg_no_bold[${(L)COLOR}]'
+    eval BOLD_$COLOR='$fg_bold[${(L)COLOR}]'
+done
+eval RESET='$reset_color'
+# --
+
 userhome="$(sudo -u $normaluser echo $HOME)"
 echo $userhome
 
+function unpriviledged() {
+    print -- ${GREEN}$@${RESET}
+    eval sudo -u $normaluser $@
+}
+
+function priviledged() {
+    print -- ${BOLD_RED}$@${RESET}
+    eval $@
+}
+
 if [[ -e $userhome/.cabal ]]; then
     print -- "Moving your ~/.cabal to ~/old.cabal"
-    sudo -u $normaluser mv $HOME/{,old}.cabal
+    unpriviledged mv $HOME/{,old}.cabal
 fi
 
 if [[ -e $userhome/.ghc ]]; then
     print -- "Moving your ~/.ghc to ~/old.ghc"
-    sudo -u $normaluser mv $HOME/{,old}.ghc
+    unpriviledged mv $HOME/{,old}.ghc
 fi
 
-# 7.8.4 don't have an official apple-darwin build
-ghcversion="7.8.3"
-cabalversion="1.20.0.3"
+ghcversion="7.8.4"
+cabalversion="1.22.0.0"
 archi=$(uname -m)
 if [[ $(uname -s) = "Darwin" ]]; then
     os="apple-darwin"
@@ -57,14 +76,14 @@ ghctar=ghc-${ghcversion}-${archi}-${os}.tar.xz
 if [[ ! -e $ghctar ]]; then
     echo "Downloading GHC..."
     echo "http://www.haskell.org/ghc/dist/${ghcversion}/$ghctar"
-    curl -LO "http://www.haskell.org/ghc/dist/${ghcversion}/$ghctar"
+    priviledged curl -LO "http://www.haskell.org/ghc/dist/${ghcversion}/$ghctar"
 else
     echo "Using already downloaded GHC ($tmpdir)..."
 fi
 echo "Installing GHC..."
-tar xJf $ghctar
-cd ghc-${ghcversion}
-./configure && make install
+priviledged tar xJf $ghctar
+priviledged cd ghc-${ghcversion}
+priviledged ./configure && make install
 
 cd $tmpdir
 echo "Downloading cabal..."
@@ -72,36 +91,36 @@ cabaltar=cabal-${cabalversion}-${archi}-${cabalos}.tar.gz
 [[ $cabalos = "unknown-linux" ]] && cabaltar=cabal-${archi}-${cabalos}.tar.gz
 if [[ ! -e $cabaltar ]]; then
     echo "http://www.haskell.org/cabal/release/cabal-install-$cabalversion/$cabaltar"
-    curl -LO "http://www.haskell.org/cabal/release/cabal-install-$cabalversion/$cabaltar"
+    priviledged curl -LO "http://www.haskell.org/cabal/release/cabal-install-$cabalversion/$cabaltar"
 else
     echo "Using already downloaded cabal ($tmpdir)..."
 fi
-tar xzf $cabaltar
+priviledged tar xzf $cabaltar
 echo "Installing cabal..."
 if [[ -e ./cabal ]]; then
-    mv cabal /usr/local/bin
+    priviledged mv cabal /usr/local/bin
 else
-    mv ./dist/build/cabal/cabal /usr/local/bin
+    priviledged mv ./dist/build/cabal/cabal /usr/local/bin
 fi
 
 echo "Init cabal..."
-sudo -u $normaluser cabal info >/dev/null 2>&1
+unpriviledged cabal info >/dev/null 2>&1
 
 echo "Using Haskell LTS for GHC 7.8"
 
 # use exclusive snapshot by default.
-sudo -u $normaluser curl 'https://www.stackage.org/lts/cabal.config?global=true' >> ~/.cabal/config
-sudo -u $normaluser perl -pi -e 's#-- library-profiling: False#library-profiling: True#' $HOME/.cabal/config
-sudo -u $normaluser perl -pi -e 's#-- executable-profiling: False#executable-profiling: True#' $HOME/.cabal/config
-sudo -u $normaluser cabal update
+unpriviledged curl 'https://www.stackage.org/lts/cabal.config?global=true' >> ~/.cabal/config
+unpriviledged perl -pi -e 's#-- library-profiling: False#library-profiling: True#' $HOME/.cabal/config
+unpriviledged perl -pi -e 's#-- executable-profiling: False#executable-profiling: True#' $HOME/.cabal/config
+unpriviledged cabal update
 echo "Install useful binaries"
-sudo -u $normaluser cabal install -j alex happy
+unpriviledged cabal install -j alex happy
 
 if grep 'export PATH=$HOME/.cabal/bin:$PATH' $HOME/.profile >/dev/null; then
     echo "PATH variable already set in your .profile"
 else
     echo "Update your PATH in .profile for cabal binaries"
-    sudo -u $normaluser echo 'export PATH=$HOME/.cabal/bin:$PATH' >> $HOME/.profile
+    unpriviledged echo 'export PATH=$HOME/.cabal/bin:$PATH' >> $HOME/.profile
 fi
 
 echo "================"
